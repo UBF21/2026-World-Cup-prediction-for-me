@@ -1,0 +1,262 @@
+---
+import StatCard from '../ui/StatCard.astro'
+import FlagImg from '../ui/FlagImg.astro'
+import { getTeam } from '../../data/teams'
+import { champion } from '../../data/predictions'
+
+const esp = getTeam('España')!
+const fra = getTeam('Francia')!
+---
+<header class="hero" id="hero">
+  <!-- Parallax background layers -->
+  <div class="hero-bg parallax-bg" aria-hidden="true"></div>
+  <div class="hero-grid" aria-hidden="true"></div>
+
+  <!-- Floating decorative elements -->
+  <div class="hero-floats" aria-hidden="true">
+    <div class="float-el float-a f1">⚽</div>
+    <div class="float-el float-b f2">🏆</div>
+    <div class="float-el float-c f3">★</div>
+    <div class="float-el float-a f4">16.1%</div>
+    <div class="float-el float-b f5">ESP</div>
+    <div class="float-el float-c f6">2026</div>
+  </div>
+
+  <div class="wrap hero-inner parallax-front">
+    <div class="hero-eyebrow fade-up">
+      <span class="eyebrow-line"></span>
+      <span>Campeón pronosticado · Mundial FIFA 2026</span>
+    </div>
+
+    <h1 class="champ-name shimmer-text fade-up">ESPAÑA</h1>
+
+    <p class="champ-sub fade-up">
+      El supercomputador de Opta la hace favorita en el <strong>{champion.probability}%</strong> de 25.000 simulaciones.
+      Aquí levanta la copa tras vencer a Francia en la final del MetLife Stadium.
+    </p>
+
+    <div class="final-chip fade-up">
+      <div class="fc-team">
+        <FlagImg isoCode={esp.isoCode} name={esp.name} code={esp.code} color={esp.color} size="lg" />
+        <span>España</span>
+      </div>
+      <div class="fc-score">
+        <span class="score-w">2</span>
+        <span class="score-sep">–</span>
+        <span>1</span>
+      </div>
+      <div class="fc-team">
+        <span>Francia</span>
+        <FlagImg isoCode={fra.isoCode} name={fra.name} code={fra.code} color={fra.color} size="lg" />
+      </div>
+      <div class="fc-meta">
+        <span class="fc-meta-label">Final</span>
+        <span>19 jul · MetLife</span>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-hint bounce" aria-hidden="true">
+      <svg width="20" height="28" viewBox="0 0 20 28" fill="none">
+        <rect x="1" y="1" width="18" height="26" rx="9" stroke="currentColor" stroke-width="1.5" stroke-opacity=".4"/>
+        <circle class="scroll-dot" cx="10" cy="8" r="3" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="stats-strip">
+    <StatCard value="104" label="Partidos predichos" />
+    <StatCard value="48"  label="Selecciones" />
+    <StatCard value="12"  label="Grupos" />
+    <StatCard value="16,1%" label="Prob. España (Opta)" accent="pitch" />
+  </div>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Background layers */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(900px 500px at 70% 30%, rgba(31,224,140,.08), transparent 60%),
+      radial-gradient(700px 400px at 10% 70%, rgba(246,197,68,.06), transparent 55%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(90deg, transparent, transparent 78px, rgba(255,255,255,.022) 78px, rgba(255,255,255,.022) 80px),
+      repeating-linear-gradient(0deg, transparent, transparent 78px, rgba(255,255,255,.014) 78px, rgba(255,255,255,.014) 80px);
+    pointer-events: none;
+    opacity: .6;
+  }
+
+  /* Floating decorative elements */
+  .hero-floats {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .float-el {
+    position: absolute;
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 700;
+    opacity: .06;
+    user-select: none;
+  }
+  .f1 { top: 12%; left: 8%;   font-size: 80px; }
+  .f2 { top: 20%; right: 6%;  font-size: 64px; }
+  .f3 { top: 55%; left: 5%;   font-size: 48px; color: var(--gold); }
+  .f4 { top: 35%; right: 12%; font-size: 42px; color: var(--pitch); opacity: .08; }
+  .f5 { bottom: 30%; left: 15%; font-size: 56px; color: var(--pitch); opacity: .05; }
+  .f6 { bottom: 20%; right: 8%; font-size: 96px; color: var(--gold); opacity: .04; }
+
+  /* Hero inner */
+  .hero-inner {
+    position: relative;
+    padding: clamp(52px, 8vw, 88px) 0 clamp(44px, 6vw, 64px);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Eyebrow */
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    font: 700 11.5px/1.4 'Manrope';
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .eyebrow-line {
+    display: block;
+    width: 32px;
+    height: 2px;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* Champion name */
+  .champ-name {
+    font-size: clamp(72px, 18vw, 192px);
+    margin: 0;
+    line-height: .92;
+    letter-spacing: -.01em;
+  }
+
+  /* Sub text */
+  .champ-sub {
+    font-size: clamp(15px, 2.2vw, 20px);
+    max-width: 580px;
+    color: var(--ink);
+    margin: 18px 0 0;
+    line-height: 1.5;
+    opacity: .88;
+  }
+  .champ-sub strong { color: var(--pitch); }
+
+  /* Final chip */
+  .final-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(12px, 2.5vw, 20px);
+    margin-top: 32px;
+    flex-wrap: wrap;
+    background: linear-gradient(160deg, var(--surface), var(--night));
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px 22px;
+    box-shadow: var(--shadow);
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .final-chip:hover {
+    border-color: rgba(246,197,68,.4);
+    box-shadow: 0 0 40px -10px rgba(246,197,68,.2);
+  }
+  .fc-team {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: clamp(14px, 2vw, 17px);
+  }
+  .fc-score {
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 700;
+    font-size: clamp(26px, 5vw, 34px);
+    letter-spacing: .06em;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .score-w  { color: var(--gold); }
+  .score-sep { color: var(--muted); }
+  .fc-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-left: 10px;
+    border-left: 1px solid var(--border);
+  }
+  .fc-meta-label {
+    font: 700 10px/1 'Manrope';
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--pitch);
+  }
+  .fc-meta span:last-child {
+    font: 600 11px/1.3 'Manrope';
+    color: var(--muted);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  /* Scroll hint */
+  .scroll-hint {
+    margin-top: 44px;
+    width: fit-content;
+    color: var(--muted);
+    opacity: .5;
+  }
+  .scroll-dot {
+    animation: scroll-dot-move 1.8s ease-in-out infinite;
+  }
+  @keyframes scroll-dot-move {
+    0%, 100% { cy: 8; opacity: 1; }
+    50%       { cy: 18; opacity: .3; }
+  }
+
+  /* Stats strip */
+  .stats-strip {
+    display: flex;
+    border-top: 1px solid var(--border);
+    background: rgba(13,30,46,.6);
+    backdrop-filter: blur(8px);
+  }
+
+  @media (max-width: 640px) {
+    .stats-strip { flex-wrap: wrap; }
+    .stats-strip :global(.stat-card) {
+      flex: 0 0 50%;
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-strip :global(.stat-card:nth-child(2)) { border-right: none; }
+    .champ-name { font-size: clamp(64px, 22vw, 96px); }
+  }
+</style>

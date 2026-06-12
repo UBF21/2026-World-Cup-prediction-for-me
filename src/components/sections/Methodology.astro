@@ -1,0 +1,112 @@
+---
+---
+<section id="metodo" class="method-section">
+  <div class="wrap">
+    <div class="sec-head fade-up">
+      <div class="eyebrow">Cómo se construyó</div>
+      <h2>Metodología y fuentes</h2>
+    </div>
+
+    <div class="meth-grid">
+      <div class="card fade-up">
+        <h3>Las variables</h3>
+        <div class="card-sub">Qué datos se usaron para cada predicción</div>
+        <ul>
+          <li><strong>Ranking FIFA</strong> del 11 jun 2026</li>
+          <li><strong>Valor de plantilla</strong> (Transfermarkt)</li>
+          <li><strong>Forma reciente</strong>: clasificación y amistosos 2024-26</li>
+          <li><strong>Localía</strong>: México, EE.UU. y Canadá juegan en casa</li>
+          <li><strong>Modelos</strong>: Opta (25.000 sims), ESPN y CBS</li>
+        </ul>
+      </div>
+
+      <div class="card fade-up">
+        <h3>El formato</h3>
+        <div class="card-sub">Reglas del Mundial 2026</div>
+        <ul>
+          <li><strong>48 equipos</strong> en 12 grupos de 4</li>
+          <li>Avanzan <strong>1º y 2º</strong> de cada grupo (24) + <strong>8 mejores 3º</strong> = 32</li>
+          <li>Llaves: <strong>dieciseisavos → octavos → cuartos → semis → final</strong></li>
+          <li>Empate en eliminatoria → <strong>prórroga y penales</strong></li>
+          <li>España y Argentina en mitades opuestas del cuadro</li>
+        </ul>
+      </div>
+
+      <div class="card fade-up">
+        <h3>Fuentes consultadas</h3>
+        <div class="card-sub">Medios y herramientas</div>
+        <div class="sources mono">
+          Opta / The Analyst · ESPN · CBS Sports · FOX Sports · Sky Sports ·
+          Al Jazeera · FanSided · WorldCupPass · FIFA.com · Transfermarkt.
+          <br /><br />
+          Banderas vía <strong>restcountries.com</strong> (respaldo flagcdn.com).
+        </div>
+      </div>
+    </div>
+
+    <div class="caveat fade-up">
+      <strong class="caveat-title">⚠ Aviso para la quiniela:</strong>
+      esto es una proyección, no una bola de cristal. Los marcadores exactos son especulativos
+      y los cruces reales de eliminatorias dependen de los 495 escenarios del Anexo C de la FIFA
+      (qué terceros clasifican). Las dos fuentes partido-a-partido coinciden en{' '}
+      <strong class="gold">España campeona</strong> pero discrepan en el finalista
+      (Francia en ESPN, Inglaterra en CBS). Conviene revisar todo al cierre de la fase de grupos
+      (27 jun). Hasta los mejores modelos fallan: Opta acertó Francia 2018, pero no vio el
+      Brasil 1-7 de 2014.
+    </div>
+  </div>
+</section>
+
+<style>
+  .method-section { border-bottom: none; }
+
+  h3 {
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+  .card-sub {
+    font: 500 12px/1.4 'Manrope';
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .meth-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+  @media (max-width: 860px) { .meth-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .meth-grid { grid-template-columns: 1fr; } }
+
+  ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.75;
+  }
+  ul strong { color: var(--ink); }
+
+  .sources {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+  .sources strong { color: var(--ink); }
+
+  .caveat {
+    background: rgba(255,84,112,.06);
+    border: 1px solid rgba(255,84,112,.22);
+    border-radius: 14px;
+    padding: 20px 22px;
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.65;
+  }
+  .caveat-title {
+    color: var(--coral);
+    display: inline;
+  }
+  .gold { color: var(--gold); }
+</style>

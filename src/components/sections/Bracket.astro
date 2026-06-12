@@ -1,0 +1,444 @@
+---
+import FlagImg from '../ui/FlagImg.astro'
+import { TOP, BOT, finalMatch, thirdMatch } from '../../data/bracket'
+import { getTeam } from '../../data/teams'
+import type { BracketMatch } from '../../data/bracket'
+
+function winner(m: BracketMatch): string {
+  return m.winnerIdx === 0 ? m.home : m.away
+}
+
+const rounds = [
+  { key: 'r32', label: 'Dieciseisavos' },
+  { key: 'r16', label: 'Octavos' },
+  { key: 'qf',  label: 'Cuartos' },
+  { key: 'sf',  label: 'Semifinal' },
+] as const
+
+function renderHalf(data: typeof TOP) {
+  return rounds.map(r => ({
+    label: r.label,
+    matches: data[r.key] as BracketMatch[],
+  }))
+}
+
+const topCols  = renderHalf(TOP)
+const botCols  = renderHalf(BOT)
+
+function tieClass(m: BracketMatch, isFinal = false) {
+  return isFinal ? 'tie final-tie' : 'tie'
+}
+---
+
+<section id="bracket">
+  <div class="wrap">
+    <div class="sec-head fade-up">
+      <div class="eyebrow">Fase eliminatoria · 32 partidos</div>
+      <h2>El camino a la copa</h2>
+      <p>Cuadro coherente desde dieciseisavos hasta la final. Las líneas conectan cada cruce y se iluminan siguiendo al equipo ganador.</p>
+    </div>
+
+    <!-- Toggle -->
+    <div class="br-toggle" id="brToggle">
+      <button data-half="top" class="br-btn on">Llave superior · España</button>
+      <button data-half="bottom" class="br-btn">Llave inferior · Francia</button>
+    </div>
+
+    <p class="br-hint" id="brHint">← Desliza para ver todas las rondas →</p>
+
+    <div class="br-scroll">
+      <!-- TOP half -->
+      <div class="bracket scale-in" id="bracketTop">
+        {topCols.map(col => (
+          <div class="br-col">
+            <div class="br-col-h">{col.label}</div>
+            {col.matches.map(m => {
+              const w = winner(m)
+              const ht = getTeam(m.home)
+              const at = getTeam(m.away)
+              return (
+                <div class={tieClass(m)} data-winner={w} data-home={m.home} data-away={m.away}>
+                  <div class={`tie-row ${m.winnerIdx === 0 ? 'win' : 'lose'}`}>
+                    <div class="tie-team">
+                      {ht && <FlagImg isoCode={ht.isoCode} name={ht.name} code={ht.code} color={ht.color} size="sm" />}
+                      <span class="nm">{m.home}</span>
+                    </div>
+                    <div class="tie-sc">{m.homeScore}</div>
+                  </div>
+                  <div class={`tie-row ${m.winnerIdx === 1 ? 'win' : 'lose'}`}>
+                    <div class="tie-team">
+                      {at && <FlagImg isoCode={at.isoCode} name={at.name} code={at.code} color={at.color} size="sm" />}
+                      <span class="nm">{m.away}</span>
+                    </div>
+                    <div class="tie-sc">{m.awayScore}</div>
+                  </div>
+                  {m.note && <div class="tie-note">{m.note}</div>}
+                </div>
+              )
+            })}
+          </div>
+        ))}
+      </div>
+
+      <!-- BOTTOM half -->
+      <div class="bracket scale-in" id="bracketBottom" style="display:none">
+        {botCols.map(col => (
+          <div class="br-col">
+            <div class="br-col-h">{col.label}</div>
+            {col.matches.map(m => {
+              const w = winner(m)
+              const ht = getTeam(m.home)
+              const at = getTeam(m.away)
+              return (
+                <div class={tieClass(m)} data-winner={w} data-home={m.home} data-away={m.away}>
+                  <div class={`tie-row ${m.winnerIdx === 0 ? 'win' : 'lose'}`}>
+                    <div class="tie-team">
+                      {ht && <FlagImg isoCode={ht.isoCode} name={ht.name} code={ht.code} color={ht.color} size="sm" />}
+                      <span class="nm">{m.home}</span>
+                    </div>
+                    <div class="tie-sc">{m.homeScore}</div>
+                  </div>
+                  <div class={`tie-row ${m.winnerIdx === 1 ? 'win' : 'lose'}`}>
+                    <div class="tie-team">
+                      {at && <FlagImg isoCode={at.isoCode} name={at.name} code={at.code} color={at.color} size="sm" />}
+                      <span class="nm">{m.away}</span>
+                    </div>
+                    <div class="tie-sc">{m.awayScore}</div>
+                  </div>
+                  {m.note && <div class="tie-note">{m.note}</div>}
+                </div>
+              )
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Final & Third place -->
+    <div class="final-stage">
+      <div class="card stage-card fade-up">
+        <div class="stage-label">La gran final · 19 jul · MetLife Stadium</div>
+        <div class="final-tie">
+          {[
+            { team: finalMatch.home, score: finalMatch.homeScore, isWin: finalMatch.winnerIdx === 0 },
+            { team: finalMatch.away, score: finalMatch.awayScore, isWin: finalMatch.winnerIdx === 1 },
+          ].map(({ team, score, isWin }) => {
+            const t = getTeam(team)
+            return (
+              <div class={`tie-row ${isWin ? 'win' : 'lose'}`}>
+                <div class="tie-team">
+                  {t && <FlagImg isoCode={t.isoCode} name={t.name} code={t.code} color={t.color} size="md" />}
+                  <span class="nm">{team}</span>
+                </div>
+                <div class="tie-sc">{score}</div>
+              </div>
+            )
+          })}
+        </div>
+        <p class="trophy-line">🏆 <strong>España</strong> levanta su segunda copa del mundo. Lamine Yamal, figura del torneo.</p>
+      </div>
+
+      <div class="card stage-card fade-up">
+        <div class="stage-label">Tercer puesto · 18 jul · Miami</div>
+        <div class="final-tie">
+          {[
+            { team: thirdMatch.home, score: thirdMatch.homeScore, isWin: thirdMatch.winnerIdx === 0 },
+            { team: thirdMatch.away, score: thirdMatch.awayScore, isWin: thirdMatch.winnerIdx === 1 },
+          ].map(({ team, score, isWin }) => {
+            const t = getTeam(team)
+            return (
+              <div class={`tie-row ${isWin ? 'win' : 'lose'}`}>
+                <div class="tie-team">
+                  {t && <FlagImg isoCode={t.isoCode} name={t.name} code={t.code} color={t.color} size="md" />}
+                  <span class="nm">{team}</span>
+                </div>
+                <div class="tie-sc">{score}</div>
+              </div>
+            )
+          })}
+        </div>
+        <p class="trophy-line muted">🥉 Argentina y Messi cierran el sexto Mundial del capitán con el bronce.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Toggle */
+  .br-toggle {
+    display: inline-flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .br-btn {
+    font: 700 13px/1 'Manrope';
+    color: var(--muted);
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .18s;
+    white-space: nowrap;
+  }
+  .br-btn:hover { color: var(--ink); }
+  .br-btn.on {
+    background: var(--pitch);
+    color: #06231a;
+    box-shadow: 0 2px 12px -2px rgba(31,224,140,.4);
+  }
+
+  .br-hint {
+    font: 600 11px/1 'Manrope';
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 12px;
+    display: none;
+  }
+
+  /* Scroll container */
+  .br-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+  .br-scroll::-webkit-scrollbar { height: 4px; }
+  .br-scroll::-webkit-scrollbar-track { background: transparent; }
+  .br-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Bracket grid */
+  .bracket {
+    display: flex;
+    gap: clamp(24px, 3.2vw, 44px);
+    min-width: 940px;
+    align-items: stretch;
+    position: relative;
+  }
+  .br-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    flex: 1;
+    min-width: 176px;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .br-col-h {
+    font: 700 11px/1 'Manrope';
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  /* Match card */
+  .tie {
+    background: linear-gradient(160deg, var(--surface), var(--night));
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    transition: border-color .18s, transform .18s, box-shadow .18s;
+  }
+  .tie:hover {
+    border-color: rgba(31,224,140,.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -8px rgba(31,224,140,.15);
+  }
+  .tie.final-tie {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold), 0 0 40px -8px rgba(246,197,68,.35);
+  }
+  .tie.final-tie .tie-row.win .tie-team,
+  .tie.final-tie .tie-row.win .tie-sc { color: var(--gold); }
+
+  .tie-row {
+    display: grid;
+    grid-template-columns: 1fr 30px;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 11px;
+  }
+  .tie-row + .tie-row { border-top: 1px solid var(--line2); }
+  .tie-row.win .tie-team,
+  .tie-row.win .tie-sc { color: var(--pitch); }
+  .tie-row.lose { opacity: .42; }
+
+  .tie-team {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 12.5px;
+    min-width: 0;
+  }
+  .tie-team .nm {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tie-sc {
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: center;
+  }
+  .tie-note {
+    font: 600 9px/1 'Manrope';
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--coral);
+    padding: 0 11px 8px;
+  }
+
+  /* SVG connectors */
+  :global(svg.connectors) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Final stage */
+  .final-stage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 36px;
+  }
+  @media (max-width: 680px) {
+    .final-stage { grid-template-columns: 1fr; }
+  }
+
+  .stage-card { text-align: center; }
+  .stage-label {
+    font: 700 11px/1.3 'Manrope';
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .final-tie { max-width: 260px; margin: 0 auto; }
+  .final-tie .tie-row {
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+
+  .trophy-line {
+    font: 600 13px/1.5 'Manrope';
+    color: var(--muted);
+    margin: 14px 0 0;
+  }
+  .trophy-line strong { color: var(--gold); }
+  .trophy-line.muted strong { color: var(--muted); }
+</style>
+
+<script>
+  const SVGNS = 'http://www.w3.org/2000/svg'
+
+  function drawConnectors(el: HTMLElement | null) {
+    if (!el || el.style.display === 'none') return
+    const old = el.querySelector('svg.connectors')
+    if (old) old.remove()
+
+    const W = el.scrollWidth, H = el.scrollHeight
+    const svg = document.createElementNS(SVGNS, 'svg') as SVGElement
+    svg.setAttribute('class', 'connectors')
+    svg.setAttribute('width', String(W))
+    svg.setAttribute('height', String(H))
+    el.prepend(svg)
+
+    const base = el.getBoundingClientRect()
+    const cols = [...el.querySelectorAll<HTMLElement>('.br-col')]
+
+    const pos = (c: HTMLElement) => {
+      const r = c.getBoundingClientRect()
+      return { l: r.left - base.left, t: r.top - base.top, w: r.width, h: r.height }
+    }
+
+    for (let r = 0; r < cols.length - 1; r++) {
+      const kids = [...cols[r].querySelectorAll<HTMLElement>('.tie')]
+      const pars = [...cols[r + 1].querySelectorAll<HTMLElement>('.tie')]
+      pars.forEach((parent, p) => {
+        const pp = pos(parent)
+        const pLeft = pp.l
+        const pY = pp.t + pp.h / 2
+        ;[kids[2 * p], kids[2 * p + 1]].forEach(child => {
+          if (!child) return
+          const cp = pos(child)
+          const cRight = cp.l + cp.w
+          const cY = cp.t + cp.h / 2
+          const midX = (cRight + pLeft) / 2
+          const hl = child.dataset.winner && child.dataset.winner === parent.dataset.winner
+          const path = document.createElementNS(SVGNS, 'path')
+          path.setAttribute('d', `M ${cRight} ${cY} H ${midX} V ${pY} H ${pLeft}`)
+          path.setAttribute('fill', 'none')
+          path.setAttribute('stroke', hl ? '#1FE08C' : 'rgba(255,255,255,.12)')
+          path.setAttribute('stroke-width', hl ? '2' : '1.4')
+          path.setAttribute('stroke-linejoin', 'round')
+          if (hl) path.style.filter = 'drop-shadow(0 0 5px rgba(31,224,140,.5))'
+          svg.appendChild(path)
+        })
+      })
+    }
+  }
+
+  function redrawVisible() {
+    const top = document.getElementById('bracketTop') as HTMLElement
+    const bot = document.getElementById('bracketBottom') as HTMLElement
+    if (top && top.style.display !== 'none') drawConnectors(top)
+    if (bot && bot.style.display !== 'none') drawConnectors(bot)
+  }
+
+  let rt: ReturnType<typeof setTimeout>
+  function redraw() {
+    clearTimeout(rt)
+    rt = setTimeout(redrawVisible, 120)
+  }
+
+  // Toggle half
+  document.querySelectorAll<HTMLButtonElement>('#brToggle .br-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('#brToggle .br-btn').forEach(x => x.classList.remove('on'))
+      b.classList.add('on')
+      const isTop = b.dataset.half === 'top'
+      const top = document.getElementById('bracketTop')!
+      const bot = document.getElementById('bracketBottom')!
+      top.style.display = isTop ? 'flex' : 'none'
+      bot.style.display = isTop ? 'none' : 'flex'
+      requestAnimationFrame(redrawVisible)
+    })
+  })
+
+  function hintCheck() {
+    const s = document.querySelector('.br-scroll') as HTMLElement
+    const hint = document.getElementById('brHint')
+    if (hint && s) hint.style.display = s.scrollWidth > s.clientWidth ? 'block' : 'none'
+  }
+
+  function init() {
+    requestAnimationFrame(() => { redrawVisible(); hintCheck() })
+  }
+
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(init)
+  } else {
+    window.addEventListener('load', init)
+  }
+  window.addEventListener('load', () => requestAnimationFrame(() => { redrawVisible(); hintCheck() }))
+  window.addEventListener('resize', () => { redraw(); hintCheck() }, { passive: true })
+</script>

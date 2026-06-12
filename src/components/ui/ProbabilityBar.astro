@@ -1,0 +1,66 @@
+---
+import FlagImg from './FlagImg.astro'
+import { getTeam } from '../../data/teams'
+
+interface Props {
+  team: string
+  value: number
+  maxValue: number
+  variant?: 'pitch' | 'gold'
+  showValue?: boolean
+}
+const { team, value, maxValue, variant = 'pitch', showValue = true } = Astro.props
+const t = getTeam(team)
+const pct = ((value / maxValue) * 100).toFixed(0)
+---
+<div class="bar-row">
+  <div class="bar-team">
+    {t && <FlagImg isoCode={t.isoCode} name={t.name} code={t.code} color={t.color} size="sm" />}
+    <span class="bar-name">{team}</span>
+  </div>
+  <div class="bar-track">
+    <div class={`bar-fill ${variant}`} data-w={pct}></div>
+  </div>
+  {showValue && (
+    <div class={`bar-val ${variant === 'gold' ? 'gold' : ''}`}>
+      {value.toFixed(1)}%
+    </div>
+  )}
+</div>
+
+<style>
+  .bar-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 52px;
+    align-items: center;
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .bar-team {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 700;
+    font-size: 13px;
+    min-width: 0;
+  }
+  .bar-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar-track {
+    height: 13px;
+    background: var(--line2);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .bar-val {
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: right;
+    color: var(--muted);
+  }
+  .bar-val.gold { color: var(--gold); }
+</style>

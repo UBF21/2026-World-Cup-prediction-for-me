@@ -1,0 +1,414 @@
+---
+import FlagImg from '../ui/FlagImg.astro'
+import { groups } from '../../data/groups'
+import { getTeam } from '../../data/teams'
+---
+<section id="grupos">
+  <div class="wrap">
+    <div class="sec-head fade-up">
+      <div class="eyebrow">Fase de grupos · 72 partidos</div>
+      <h2>Los 12 grupos, partido por partido</h2>
+      <p>
+        Tabla proyectada y los seis marcadores de cada grupo.
+        <span class="c-pitch">Verde</span> = clasifican directo (1º y 2º);
+        <span class="c-gold">dorado</span> = candidato a mejor tercero.
+        México 2-0 Sudáfrica ya se jugó.
+      </p>
+    </div>
+
+    <!-- Desktop grid (hidden on mobile, shown via CSS) -->
+    <div class="groups-grid" id="groupsGrid">
+      {groups.map((g, gi) => {
+        const posClass = (i: number) => ['p1','p2','p3','p4'][i] ?? 'p4'
+        const qualClass = (i: number) => i < 2 ? 'q1' : i === 2 ? 'q3' : ''
+        return (
+          <div class="grp fade-up" style={`animation-delay:${gi * 40}ms`}>
+            <div class="grp-head">
+              <div class="grp-id">GRUPO <span>{g.id}</span></div>
+              <div class="grp-tag">{g.tag}</div>
+            </div>
+
+            <!-- Standings table -->
+            <table class="standings">
+              <thead>
+                <tr>
+                  <th class="tl">Selección</th>
+                  <th>PJ</th><th>G</th><th>E</th><th>P</th>
+                  <th>GF</th><th>GC</th><th>Pts</th>
+                </tr>
+              </thead>
+              <tbody>
+                {g.table.map((row, i) => {
+                  const t = getTeam(row.team)
+                  return (
+                    <tr class={qualClass(i)}>
+                      <td class="tl">
+                        <div class="team-cell">
+                          <span class={`pos ${posClass(i)}`}>{i+1}</span>
+                          {t && <FlagImg isoCode={t.isoCode} name={t.name} code={t.code} color={t.color} size="sm" />}
+                          <span class="nm">{row.team}</span>
+                        </div>
+                      </td>
+                      <td>{row.played}</td>
+                      <td>{row.won}</td>
+                      <td>{row.drawn}</td>
+                      <td>{row.lost}</td>
+                      <td>{row.gf}</td>
+                      <td>{row.gc}</td>
+                      <td class="pts">{row.points}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+
+            <!-- Matches -->
+            <div class="grp-matches">
+              <div class="matches-head">Marcadores predichos</div>
+              {g.matches.map(m => {
+                const ht = getTeam(m.home)
+                const at = getTeam(m.away)
+                const hw = m.homeScore > m.awayScore
+                const aw = m.awayScore > m.homeScore
+                return (
+                  <div class={`gm ${m.played ? 'played' : ''}`}>
+                    <div class={`gm-home ${hw ? 'wn' : ''}`}>
+                      <span class="nm">{ht?.code ?? m.home}</span>
+                      {ht && <FlagImg isoCode={ht.isoCode} name={ht.name} code={ht.code} color={ht.color} size="sm" />}
+                    </div>
+                    <div class="gm-score">{m.homeScore}–{m.awayScore}</div>
+                    <div class={`gm-away ${aw ? 'wn' : ''}`}>
+                      {at && <FlagImg isoCode={at.isoCode} name={at.name} code={at.code} color={at.color} size="sm" />}
+                      <span class="nm">{at?.code ?? m.away}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+
+    <!-- Mobile carousel -->
+    <div class="groups-carousel" id="groupsCarousel" aria-label="Grupos carousel">
+      <div class="carousel-track" id="carouselTrack">
+        {groups.map((g, gi) => {
+          const posClass = (i: number) => ['p1','p2','p3','p4'][i] ?? 'p4'
+          const qualClass = (i: number) => i < 2 ? 'q1' : i === 2 ? 'q3' : ''
+          return (
+            <div class="carousel-slide" data-index={gi}>
+              <div class="grp">
+                <div class="grp-head">
+                  <div class="grp-id">GRUPO <span>{g.id}</span></div>
+                  <div class="grp-tag">{g.tag}</div>
+                </div>
+                <table class="standings">
+                  <thead>
+                    <tr>
+                      <th class="tl">Selección</th>
+                      <th>PJ</th><th>G</th><th>E</th><th>P</th>
+                      <th>GF</th><th>GC</th><th>Pts</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {g.table.map((row, i) => {
+                      const t = getTeam(row.team)
+                      return (
+                        <tr class={qualClass(i)}>
+                          <td class="tl">
+                            <div class="team-cell">
+                              <span class={`pos ${posClass(i)}`}>{i+1}</span>
+                              {t && <FlagImg isoCode={t.isoCode} name={t.name} code={t.code} color={t.color} size="sm" />}
+                              <span class="nm">{row.team}</span>
+                            </div>
+                          </td>
+                          <td>{row.played}</td><td>{row.won}</td><td>{row.drawn}</td><td>{row.lost}</td>
+                          <td>{row.gf}</td><td>{row.gc}</td><td class="pts">{row.points}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+                <div class="grp-matches">
+                  <div class="matches-head">Marcadores predichos</div>
+                  {g.matches.map(m => {
+                    const ht = getTeam(m.home)
+                    const at = getTeam(m.away)
+                    const hw = m.homeScore > m.awayScore
+                    const aw = m.awayScore > m.homeScore
+                    return (
+                      <div class={`gm ${m.played ? 'played' : ''}`}>
+                        <div class={`gm-home ${hw ? 'wn' : ''}`}>
+                          <span class="nm">{ht?.code ?? m.home}</span>
+                          {ht && <FlagImg isoCode={ht.isoCode} name={ht.name} code={ht.code} color={ht.color} size="sm" />}
+                        </div>
+                        <div class="gm-score">{m.homeScore}–{m.awayScore}</div>
+                        <div class={`gm-away ${aw ? 'wn' : ''}`}>
+                          {at && <FlagImg isoCode={at.isoCode} name={at.name} code={at.code} color={at.color} size="sm" />}
+                          <span class="nm">{at?.code ?? m.away}</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <!-- Carousel nav -->
+      <div class="carousel-nav">
+        <button class="carousel-btn" id="prevGroup" aria-label="Grupo anterior">‹</button>
+        <div class="carousel-dots" id="carouselDots">
+          {groups.map((_, i) => (
+            <button class={`dot ${i === 0 ? 'active' : ''}`} data-index={i} aria-label={`Grupo ${i + 1}`}></button>
+          ))}
+        </div>
+        <button class="carousel-btn" id="nextGroup" aria-label="Grupo siguiente">›</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .c-pitch { color: var(--pitch); font-weight: 600; }
+  .c-gold  { color: var(--gold);  font-weight: 600; }
+
+  /* Desktop grid */
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 900px) { .groups-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Hide desktop on mobile, show carousel */
+  @media (max-width: 600px) {
+    .groups-grid   { display: none; }
+    .groups-carousel { display: block; }
+  }
+  .groups-carousel { display: none; }
+
+  /* Group card */
+  .grp {
+    background: linear-gradient(160deg, var(--surface), var(--night));
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: border-color .18s;
+  }
+  .grp:hover { border-color: rgba(31,224,140,.25); }
+
+  .grp-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,30,46,.5);
+  }
+  .grp-id {
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 17px;
+    letter-spacing: .04em;
+  }
+  .grp-id span { color: var(--pitch); }
+  .grp-tag {
+    font: 600 10px/1.2 'Manrope';
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* Standings table */
+  .standings {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .standings th {
+    font: 600 9px/1 'Manrope';
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted);
+    text-align: center;
+    padding: 8px 3px;
+    border-bottom: 1px solid var(--line2);
+  }
+  .standings th.tl { text-align: left; padding-left: 14px; }
+  .standings td {
+    padding: 7px 3px;
+    text-align: center;
+    border-bottom: 1px solid var(--line2);
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 11.5px;
+  }
+  .standings td.tl {
+    text-align: left;
+    padding-left: 14px;
+    font-family: 'Manrope';
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .standings td.pts { font-weight: 700; color: var(--ink); }
+  .standings tr.q1 td,
+  .standings tr.q2 td { background: rgba(31,224,140,.05); }
+  .standings tr.q3 td { background: rgba(246,197,68,.04); }
+
+  .team-cell {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+  }
+  .team-cell .nm {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pos {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 9px/1 'Spline Sans Mono';
+    flex-shrink: 0;
+  }
+  .p1, .p2 { background: var(--pitch); color: #06231a; }
+  .p3       { background: var(--gold);  color: #241a00; }
+  .p4       { background: var(--border); color: var(--muted); }
+
+  /* Match rows */
+  .grp-matches { padding: 8px 14px 14px; }
+  .matches-head {
+    font: 600 9px/1 'Manrope';
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--muted);
+    margin: 8px 0 6px;
+  }
+  .gm {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 0;
+    font-size: 11px;
+  }
+  .gm-home {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: flex-end;
+    text-align: right;
+    font-weight: 600;
+    min-width: 0;
+  }
+  .gm-away {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    min-width: 0;
+  }
+  .gm .nm {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gm-score {
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 2px 7px;
+    background: var(--night);
+    border-radius: 6px;
+    border: 1px solid var(--line2);
+    white-space: nowrap;
+  }
+  .gm.played .gm-score { border-color: var(--pitch); color: var(--pitch); }
+  .wn { color: var(--pitch); }
+
+  /* Carousel */
+  .carousel-track {
+    display: flex;
+    transition: transform .38s cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+  }
+  .carousel-slide {
+    flex: 0 0 100%;
+    padding: 0 4px;
+  }
+  .carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .carousel-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, border-color .15s;
+    line-height: 1;
+  }
+  .carousel-btn:hover { background: var(--border); border-color: var(--pitch); }
+  .carousel-dots {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    border: none;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+    padding: 0;
+  }
+  .dot.active { background: var(--pitch); transform: scale(1.3); }
+</style>
+
+<script>
+  const track   = document.getElementById('carouselTrack') as HTMLElement
+  const dots    = document.querySelectorAll<HTMLElement>('#carouselDots .dot')
+  const prevBtn = document.getElementById('prevGroup') as HTMLButtonElement
+  const nextBtn = document.getElementById('nextGroup') as HTMLButtonElement
+
+  let current = 0
+  const total = dots.length
+
+  function goTo(index: number) {
+    current = (index + total) % total
+    track.style.transform = `translateX(-${current * 100}%)`
+    dots.forEach((d, i) => d.classList.toggle('active', i === current))
+  }
+
+  prevBtn?.addEventListener('click', () => goTo(current - 1))
+  nextBtn?.addEventListener('click', () => goTo(current + 1))
+  dots.forEach(d => d.addEventListener('click', () => goTo(Number(d.dataset.index))))
+
+  // Touch swipe
+  let startX = 0
+  track?.addEventListener('touchstart', e => { startX = e.touches[0].clientX }, { passive: true })
+  track?.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX
+    if (Math.abs(dx) > 50) goTo(dx < 0 ? current + 1 : current - 1)
+  }, { passive: true })
+</script>

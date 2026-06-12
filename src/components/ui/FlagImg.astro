@@ -1,0 +1,30 @@
+---
+interface Props {
+  isoCode: string
+  name: string
+  code: string
+  color: string
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+}
+const { isoCode, name, code, color, size = 'md' } = Astro.props
+
+import { txtColor } from '../../data/teams'
+const tc = txtColor(color)
+---
+<span
+  class={`badge ${size}`}
+  data-iso={isoCode}
+  style={`background:${color};color:${tc}`}
+  title={name}
+  aria-label={name}
+>
+  {code}
+</span>
+
+<style>
+  /* sizes overriding global .badge */
+  .badge.sm { width: 20px; height: 20px; font-size: 7.5px; }
+  .badge.md { width: 26px; height: 26px; font-size: 9px;   }
+  .badge.lg { width: 36px; height: 36px; font-size: 11px;  }
+  .badge.xl { width: 52px; height: 52px; font-size: 14px;  }
+</style>

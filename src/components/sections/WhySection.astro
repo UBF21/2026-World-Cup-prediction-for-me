@@ -1,0 +1,332 @@
+---
+import FlagImg from '../ui/FlagImg.astro'
+import { getTeam } from '../../data/teams'
+
+const slides = [
+  {
+    team: 'España',
+    role: 'Campeona',
+    isoCode: 'es',
+    color: '#C60B1E',
+    pill: 'Opta 16,1% · Apuestas +450',
+    content: [
+      'El equipo más equilibrado del torneo y <strong>el único con más del 50% de probabilidad de llegar a cuartos</strong> según Opta (52,1%). Invicta desde marzo de 2024, con una profundidad de mediocampo sin rival —Pedri, Rodri— y un Lamine Yamal en estado de gracia (€200M, jugador más valioso junto a Haaland).',
+      'Riesgo real: su flojo historial mundialista (una sola semifinal en sus últimas 14 participaciones) y cualquier recaída muscular de Yamal.',
+    ],
+  },
+  {
+    team: 'Francia',
+    role: 'Finalista',
+    isoCode: 'fr',
+    color: '#1356A2',
+    pill: 'Opta 13,0% · Plantilla #1',
+    content: [
+      '<strong>La plantilla más cara del torneo (€1.530M)</strong>: Mbappé, Olise, Doué. Último gran torneo de Deschamps y una generación en su pico. Cae a 3ª del ranking FIFA pero sigue siendo la 2ª favorita de las casas (+475).',
+      'Le tocó el grupo más difícil entre los grandes (con Noruega y Senegal) y una llave cargada con Alemania, Países Bajos y Argentina.',
+    ],
+  },
+  {
+    team: 'Inglaterra',
+    role: 'Semifinalista',
+    isoCode: 'gb-eng',
+    color: '#13327A',
+    pill: 'Opta 11,2% · Apuestas +700',
+    content: [
+      'Segunda plantilla más cara (€1.310M) con Kane, Bellingham y Rice. Llega como 4ª del ranking y 11,2% de Opta. En este cuadro supera a Brasil en cuartos antes de caer ante España.',
+      'Sigue persiguiendo su primer título desde 1966; el peso de la historia es su mayor lastre.',
+    ],
+  },
+  {
+    team: 'Argentina',
+    role: 'Semifinalista',
+    isoCode: 'ar',
+    color: '#75AADB',
+    pill: 'Ranking FIFA #1 · Opta 10,4%',
+    content: [
+      'Campeona vigente y <strong>número 1 del ranking FIFA</strong>, con Messi en su sexto Mundial. Recuperó la cima tras ganar sus dos amistosos de preparación. Cae en semis ante Francia y se lleva el bronce.',
+      'El dato en contra: ninguna selección retiene el título desde Brasil 1962. A favor: 7 de los 8 Mundiales jugados en América los ganó un equipo de CONMEBOL.',
+    ],
+  },
+  {
+    team: 'Noruega',
+    role: 'Dark Horse',
+    isoCode: 'no',
+    color: '#BA1A33',
+    pill: 'Haaland + Ødegaard · Apuestas 30-1',
+    content: [
+      '<strong>37 goles en clasificación</strong>, el máximo de todas las selecciones. Haaland y Ødegaard forman la dupla más peligrosa fuera del top-4. Apuestas de valor: Noruega a semifinales (30-1).',
+      'Le tocó el grupo de la muerte (Francia, Senegal, Irak) pero con la calidad ofensiva que tienen pueden causar sorpresas en eliminatoria.',
+    ],
+  },
+  {
+    team: 'Colombia',
+    role: 'Dark Horse',
+    isoCode: 'co',
+    color: '#FBD116',
+    pill: 'Finalista Copa América 2024',
+    content: [
+      'Finalista de la Copa América 2024, gana el Grupo K por el empuje de la afición local. <strong>Apuesta de valor: Colombia a ganar su grupo (+250)</strong>.',
+      'Con James Rodríguez como último baile y una generación joven con mucha garra, pueden llegar lejos si evitan a los grandes en las primeras rondas.',
+    ],
+  },
+]
+
+const t0 = getTeam('España')!
+---
+<section id="porque">
+  <div class="wrap">
+    <div class="sec-head fade-up">
+      <div class="eyebrow">La lógica</div>
+      <h2>Por qué llegan los que llegan</h2>
+      <p>El razonamiento detrás de los semifinalistas y la campeona, cruzando estadística, plantillas y prensa especializada.</p>
+    </div>
+
+    <!-- Slider -->
+    <div class="why-slider" id="whySlider">
+      <div class="slider-track" id="sliderTrack">
+        {slides.map((s, i) => {
+          const t = getTeam(s.team)
+          return (
+            <div class="slide" data-index={i}>
+              <div class="slide-bg" style={`--team-color: ${s.color}`} aria-hidden="true"></div>
+              <div class="slide-content">
+                <div class="slide-header">
+                  {t && <FlagImg isoCode={t.isoCode} name={t.name} code={t.code} color={t.color} size="xl" />}
+                  <div>
+                    <div class="slide-role">{s.role}</div>
+                    <h3 class="slide-team">{s.team}</h3>
+                  </div>
+                </div>
+                <div class="slide-text">
+                  {s.content.map(p => <p set:html={p} />)}
+                </div>
+                <span class="pill">{s.pill}</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <!-- Controls -->
+      <button class="slider-arrow left" id="prevSlide" aria-label="Anterior">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="slider-arrow right" id="nextSlide" aria-label="Siguiente">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M8 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="slider-dots" id="sliderDots">
+        {slides.map((_, i) => (
+          <button class={`dot ${i === 0 ? 'active' : ''}`} data-index={i} aria-label={`Slide ${i + 1}`}></button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Dark Horses extra card -->
+    <div class="card dark-horse fade-up">
+      <h3>🐎 Dark horses a vigilar</h3>
+      <p>
+        <strong>Noruega</strong> (Haaland + Ødegaard, 37 goles en clasificación, el máximo de todos) ·
+        <strong>Colombia</strong> (finalista de la Copa América 2024, gana el Grupo K por afición local) ·
+        <strong>Países Bajos</strong> (Van Dijk, Gakpo) ·
+        <strong>Marruecos</strong> (semifinalista en 2022, 7º del ranking).
+        Apuestas de valor: Colombia a ganar su grupo (+250) y Noruega a semifinales (30-1).
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .why-slider {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    min-height: 340px;
+  }
+
+  .slider-track {
+    display: flex;
+    transition: transform .45s cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+  }
+
+  .slide {
+    flex: 0 0 100%;
+    position: relative;
+    padding: 36px 36px 52px;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .slide-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--team-color) 22%, transparent) 0%, transparent 60%),
+      linear-gradient(160deg, var(--surface), var(--night));
+    pointer-events: none;
+  }
+  .slide-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(600px 400px at 80% 50%, color-mix(in srgb, var(--team-color) 10%, transparent), transparent 70%);
+  }
+
+  .slide-content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+  }
+
+  .slide-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .slide-role {
+    font: 600 11px/1 'Manrope';
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--pitch);
+    margin-bottom: 5px;
+  }
+  .slide-team {
+    font-size: clamp(24px, 4vw, 36px);
+    margin: 0;
+    letter-spacing: .02em;
+  }
+
+  .slide-text p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+    margin: 0 0 10px;
+  }
+  .slide-text p:last-child { margin-bottom: 0; }
+  .slide-text :global(strong) { color: var(--ink); }
+
+  .pill {
+    display: inline-block;
+    font: 700 10px/1 'Manrope';
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    border-radius: 20px;
+    padding: 6px 12px;
+    margin-top: 16px;
+  }
+
+  /* Arrows */
+  .slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(13,30,46,.85);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .18s, border-color .18s, transform .18s;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+  }
+  .slider-arrow:hover {
+    background: var(--surface);
+    border-color: var(--pitch);
+    transform: translateY(-50%) scale(1.08);
+  }
+  .slider-arrow.left  { left: 14px; }
+  .slider-arrow.right { right: 14px; }
+
+  /* Dots */
+  .slider-dots {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    border: none;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+    padding: 0;
+  }
+  .dot.active { background: var(--pitch); transform: scale(1.4); }
+
+  /* Dark horse card */
+  .dark-horse h3 {
+    font-size: 17px;
+    margin: 0 0 12px;
+  }
+  .dark-horse p {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.65;
+  }
+  .dark-horse p :global(strong) { color: var(--ink); }
+
+  @media (max-width: 640px) {
+    .slide { padding: 24px 20px 56px; }
+    .slider-arrow { width: 36px; height: 36px; }
+  }
+</style>
+
+<script>
+  const track   = document.getElementById('sliderTrack') as HTMLElement
+  const dots    = document.querySelectorAll<HTMLElement>('#sliderDots .dot')
+  const prevBtn = document.getElementById('prevSlide') as HTMLButtonElement
+  const nextBtn = document.getElementById('nextSlide') as HTMLButtonElement
+
+  let current = 0
+  const total = dots.length
+
+  function goTo(index: number) {
+    current = (index + total) % total
+    track.style.transform = `translateX(-${current * 100}%)`
+    dots.forEach((d, i) => d.classList.toggle('active', i === current))
+  }
+
+  prevBtn?.addEventListener('click', () => goTo(current - 1))
+  nextBtn?.addEventListener('click', () => goTo(current + 1))
+  dots.forEach(d => d.addEventListener('click', () => goTo(Number(d.dataset.index))))
+
+  // Touch swipe
+  let startX = 0
+  track?.addEventListener('touchstart', e => { startX = e.touches[0].clientX }, { passive: true })
+  track?.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX
+    if (Math.abs(dx) > 50) goTo(dx < 0 ? current + 1 : current - 1)
+  }, { passive: true })
+
+  // Auto-advance every 6s
+  let autoPlay = setInterval(() => goTo(current + 1), 6000)
+  const slider = document.getElementById('whySlider')
+  slider?.addEventListener('mouseenter', () => clearInterval(autoPlay))
+  slider?.addEventListener('mouseleave', () => {
+    autoPlay = setInterval(() => goTo(current + 1), 6000)
+  })
+</script>

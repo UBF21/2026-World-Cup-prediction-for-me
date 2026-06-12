@@ -1,0 +1,162 @@
+---
+import ProbabilityBar from '../ui/ProbabilityBar.astro'
+import FlagImg from '../ui/FlagImg.astro'
+import { optaRanking, transfermarktTop, fifaRanking } from '../../data/predictions'
+import { getTeam } from '../../data/teams'
+
+const maxOpta = optaRanking[0].probability
+---
+<section id="dashboard">
+  <div class="wrap">
+    <div class="sec-head fade-up">
+      <div class="eyebrow">Panorama</div>
+      <h2>El tablero de favoritos</h2>
+      <p>Quién manda según el modelo de Opta, el dinero de las plantillas (Transfermarkt) y el ranking FIFA del 11 de junio de 2026. La materia prima detrás de cada marcador.</p>
+    </div>
+
+    <div class="dash-grid">
+      <!-- Opta probability card -->
+      <div class="card fade-up" id="opta-card">
+        <h3>Probabilidad de ser campeón</h3>
+        <div class="card-sub">Supercomputador Opta · 25.000 simulaciones · 1 jun 2026</div>
+        <div class="bars-wrap" id="optaBars">
+          {optaRanking.map(item => (
+            <ProbabilityBar
+              team={item.team}
+              value={item.probability}
+              maxValue={maxOpta}
+              variant={item.isChampion ? 'gold' : 'pitch'}
+            />
+          ))}
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="right-col">
+        <!-- Transfermarkt -->
+        <div class="card fade-up">
+          <h3>Plantillas más caras</h3>
+          <div class="card-sub">Valor de mercado total · Transfermarkt, jun 2026</div>
+          <div class="mini-list">
+            {transfermarktTop.map(item => {
+              const t = getTeam(item.team)
+              return (
+                <div class="mini-row">
+                  <div class="mini-l">
+                    {t && <FlagImg isoCode={t.isoCode} name={t.name} code={t.code} color={t.color} size="sm" />}
+                    <span>{item.team}</span>
+                  </div>
+                  <div class="mini-r">{item.value}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <!-- FIFA Ranking -->
+        <div class="card fade-up">
+          <h3>Ranking FIFA · Top 10</h3>
+          <div class="card-sub">Publicado el 11 jun 2026 · Italia (12º) es la gran ausente</div>
+          <div class="mini-list">
+            {fifaRanking.map((name, i) => {
+              const t = getTeam(name)
+              return (
+                <div class="mini-row">
+                  <div class="mini-l">
+                    <span class="rank mono">{i + 1}</span>
+                    {t && <FlagImg isoCode={t.isoCode} name={t.name} code={t.code} color={t.color} size="sm" />}
+                    <span>{name}</span>
+                  </div>
+                  <div class="mini-r pitch">{i === 0 ? '★' : ''}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .dash-grid { grid-template-columns: 1fr; }
+  }
+
+  h3 {
+    font-size: 19px;
+    letter-spacing: .02em;
+    margin: 0 0 4px;
+  }
+  .card-sub {
+    font: 500 12px/1.4 'Manrope';
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .bars-wrap { display: flex; flex-direction: column; }
+
+  .right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .mini-list { display: flex; flex-direction: column; }
+  .mini-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line2);
+    font-size: 14px;
+    transition: background .15s;
+  }
+  .mini-row:last-child { border-bottom: none; }
+  .mini-row:hover { background: rgba(31,224,140,.03); }
+  .mini-l {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 600;
+    min-width: 0;
+  }
+  .mini-r {
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 600;
+    color: var(--pitch);
+    white-space: nowrap;
+    font-size: 13px;
+  }
+  .mini-r.pitch { color: var(--pitch); }
+  .rank {
+    width: 20px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+</style>
+
+<script>
+  // Animate bars when section enters viewport
+  const bars = document.querySelectorAll<HTMLElement>('.bar-fill')
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        bars.forEach(b => {
+          b.style.width = (b.dataset.w ?? '0') + '%'
+        })
+        obs.disconnect()
+      }
+    })
+  }, { threshold: 0.3 })
+
+  const optaCard = document.getElementById('opta-card')
+  if (optaCard) observer.observe(optaCard)
+</script>

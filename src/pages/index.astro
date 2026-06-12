@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Navbar from '../components/layout/Navbar.astro'
+import Footer from '../components/layout/Footer.astro'
+import Hero from '../components/sections/Hero.astro'
+import Dashboard from '../components/sections/Dashboard.astro'
+import Bracket from '../components/sections/Bracket.astro'
+import Groups from '../components/sections/Groups.astro'
+import WhySection from '../components/sections/WhySection.astro'
+import Methodology from '../components/sections/Methodology.astro'
+import '../styles/global.css'
+import '../styles/animations.css'
+---
+<BaseLayout>
+  <Navbar />
+  <main>
+    <Hero />
+
+    <div class="wrap"><div class="divider" aria-hidden="true"></div></div>
+
+    <Dashboard />
+
+    <div class="wrap"><div class="divider" aria-hidden="true"></div></div>
+
+    <Bracket />
+
+    <div class="wrap"><div class="divider" aria-hidden="true"></div></div>
+
+    <Groups />
+
+    <div class="wrap"><div class="divider" aria-hidden="true"></div></div>
+
+    <WhySection />
+
+    <div class="wrap"><div class="divider" aria-hidden="true"></div></div>
+
+    <Methodology />
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  import { initAnimations } from '../scripts/animations'
+  import { loadFlags } from '../scripts/flags'
+
+  document.fonts?.ready.then(() => {
+    initAnimations()
+    loadFlags()
+  })
+
+  window.addEventListener('load', () => {
+    loadFlags()
+  })
+</script>
+
+<style>
+  main { overflow-x: hidden; }
+  .wrap .divider { margin: 0; transform-origin: left; }
+</style>
