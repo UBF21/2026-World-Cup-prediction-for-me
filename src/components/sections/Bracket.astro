@@ -371,12 +371,17 @@ function tieClass(m: BracketMatch, isFinal = false) {
     svg.setAttribute('height', String(H))
     el.prepend(svg)
 
-    const base = el.getBoundingClientRect()
     const cols = [...el.querySelectorAll<HTMLElement>('.br-col')]
 
+    // offsetLeft/Top traversal: coordenadas de layout, no afectadas por CSS transforms
     const pos = (c: HTMLElement) => {
-      const r = c.getBoundingClientRect()
-      return { l: r.left - base.left, t: r.top - base.top, w: r.width, h: r.height }
+      let x = 0, y = 0, node: HTMLElement | null = c
+      while (node && node !== el) {
+        x += node.offsetLeft
+        y += node.offsetTop
+        node = node.offsetParent as HTMLElement | null
+      }
+      return { l: x, t: y, w: c.offsetWidth, h: c.offsetHeight }
     }
 
     const mkPath = (d: string, stroke: string, sw: string, glow?: string) => {
