@@ -43,14 +43,15 @@ import '../styles/animations.css'
   import { initAnimations } from '../scripts/animations'
   import { loadFlags } from '../scripts/flags'
 
-  document.fonts?.ready.then(() => {
-    initAnimations()
-    loadFlags()
-  })
+  // Flags: run immediately — no preload dependency
+  loadFlags()
 
-  window.addEventListener('load', () => {
-    loadFlags()
-  })
+  // Animations: run after fonts so layout is stable
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(() => initAnimations())
+  } else {
+    window.addEventListener('load', () => initAnimations())
+  }
 </script>
 
 <style>
