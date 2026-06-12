@@ -3,11 +3,10 @@ import { animate, inView, scroll } from 'motion'
 const EASE_OUT: [number, number, number, number] = [0.2, 0.8, 0.2, 1]
 const SPRING:   [number, number, number, number] = [0.34, 1.56, 0.64, 1]
 
-const FADE_MARGIN   = '-80px'
-const PARALLAX_BG   = 80
-const PARALLAX_MID  = 120
+const FADE_MARGIN    = '-80px'
+const PARALLAX_BG    = 80
+const PARALLAX_MID   = 120
 const PARALLAX_FRONT = 40
-const CARD_PARALLAX = 20
 const SLIDE_PARALLAX = 20
 
 function fadeIn(target: Element, x = 0, y = 0, delay = 0) {
@@ -27,7 +26,8 @@ function initFadeAnimations() {
 
   inView('.fade-left',  ({ target }) => fadeIn(target, -24, 0), { margin: '-60px' })
   inView('.fade-right', ({ target }) => fadeIn(target,  24, 0), { margin: '-60px' })
-  inView('.scale-in',   ({ target }) => {
+
+  inView('.scale-in', ({ target }) => {
     animate(target as HTMLElement, { opacity: [0, 1], scale: [0.94, 1] }, { duration: 0.5, easing: EASE_OUT })
     return () => {}
   }, { margin: '-60px' })
@@ -39,38 +39,36 @@ function initFadeAnimations() {
 }
 
 function initHeroParallax() {
-  const hero     = document.querySelector<HTMLElement>('.hero')
-  const bg       = document.querySelector<HTMLElement>('.parallax-bg')
-  const floats   = document.querySelector<HTMLElement>('.hero-floats')
-  const front    = document.querySelector<HTMLElement>('.parallax-front')
+  const hero   = document.querySelector<HTMLElement>('.hero')
+  const bg     = document.querySelector<HTMLElement>('.parallax-bg')
+  const floats = document.querySelector<HTMLElement>('.hero-floats')
+  const front  = document.querySelector<HTMLElement>('.parallax-front')
   if (!hero || !bg) return
 
+  // Window-level scroll → no target needed, no positioning requirement
   scroll(({ y }) => {
+    if (!y) return
     const p = y.progress
-    bg.style.transform     = `translateY(${p * PARALLAX_BG}px)`
+    bg.style.transform = `translateY(${p * PARALLAX_BG}px)`
     if (floats) floats.style.transform = `translateY(${p * PARALLAX_MID}px)`
     if (front)  front.style.transform  = `translateY(${p * PARALLAX_FRONT}px)`
   }, { target: hero, offset: ['start start', 'end start'] })
 }
 
-function initDashboardParallax() {
-  document.querySelectorAll<HTMLElement>('#dashboard .card').forEach((card, i) => {
-    const dir = i % 2 === 0 ? 1 : -1
-    scroll(
-      ({ y }) => { card.style.transform = `translateY(${y.progress * CARD_PARALLAX * dir}px)` },
-      { target: card, offset: ['start end', 'end start'] }
-    )
-  })
-}
-
 function initSlideParallax() {
-  document.querySelectorAll<HTMLElement>('.slide').forEach((slide, i) => {
-    const offset = i % 2 === 0 ? SLIDE_PARALLAX : -SLIDE_PARALLAX
-    scroll(
-      ({ y }) => { slide.style.backgroundPositionY = `${50 + y.progress * offset}%` },
-      { target: slide, offset: ['start end', 'end start'] }
-    )
-  })
+  const slider = document.querySelector<HTMLElement>('.why-slider')
+  if (!slider) return
+
+  // Track the slider section, not individual slides
+  const offset = SLIDE_PARALLAX
+  scroll(({ y }) => {
+    if (!y) return
+    const p = y.progress
+    document.querySelectorAll<HTMLElement>('.slide-bg').forEach((bg, i) => {
+      const dir = i % 2 === 0 ? 1 : -1
+      bg.style.backgroundPositionY = `${50 + p * offset * dir}%`
+    })
+  }, { target: slider, offset: ['start end', 'end start'] })
 }
 
 function initBars() {
@@ -97,7 +95,6 @@ function initCardHover() {
 export function initAnimations(): void {
   initFadeAnimations()
   initHeroParallax()
-  initDashboardParallax()
   initSlideParallax()
   initBars()
   initCardHover()

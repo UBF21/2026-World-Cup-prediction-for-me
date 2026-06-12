@@ -108,6 +108,7 @@ a { color: inherit; }
 
 /* ── CARD ── */
 .card {
+  position: relative;
   background: linear-gradient(160deg, var(--surface), var(--night));
   border: 1px solid var(--border);
   border-radius: var(--r);
