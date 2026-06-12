@@ -201,6 +201,9 @@ function tieClass(m: BracketMatch, isFinal = false) {
     margin: 0 0 12px;
     display: none;
   }
+  @media (max-width: 1100px) {
+    .br-hint { display: block; }
+  }
 
   /* Scroll container */
   .br-scroll {
@@ -218,6 +221,7 @@ function tieClass(m: BracketMatch, isFinal = false) {
   /* Bracket grid */
   .bracket {
     display: flex;
+    flex-wrap: nowrap;
     gap: clamp(24px, 3.2vw, 44px);
     min-width: 940px;
     align-items: stretch;
@@ -227,7 +231,7 @@ function tieClass(m: BracketMatch, isFinal = false) {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    flex: 1;
+    flex: 0 0 auto;
     min-width: 176px;
     gap: 12px;
     position: relative;
