@@ -15,26 +15,24 @@ function fadeIn(target: Element, x = 0, y = 0, delay = 0) {
     { opacity: [0, 1], x: [x, 0], y: [y, 0] },
     { duration: 0.55, delay, easing: EASE_OUT }
   )
-  return () => {}
+  // Sin return: inView dispara una sola vez y desconecta el observer
 }
 
 function initFadeAnimations() {
   inView('.fade-up', ({ target }) => {
     const siblings = [...(target.parentElement?.querySelectorAll<HTMLElement>('.fade-up') ?? [target])]
-    return fadeIn(target, 0, 28, siblings.indexOf(target as HTMLElement) * 0.06)
+    fadeIn(target, 0, 28, siblings.indexOf(target as HTMLElement) * 0.06)
   }, { margin: FADE_MARGIN })
 
-  inView('.fade-left',  ({ target }) => fadeIn(target, -24, 0), { margin: '-60px' })
-  inView('.fade-right', ({ target }) => fadeIn(target,  24, 0), { margin: '-60px' })
+  inView('.fade-left',  ({ target }) => { fadeIn(target, -24, 0) }, { margin: '-60px' })
+  inView('.fade-right', ({ target }) => { fadeIn(target,  24, 0) }, { margin: '-60px' })
 
   inView('.scale-in', ({ target }) => {
     animate(target as HTMLElement, { opacity: [0, 1], scale: [0.94, 1] }, { duration: 0.5, easing: EASE_OUT })
-    return () => {}
   }, { margin: '-60px' })
 
   inView('.divider', ({ target }) => {
     animate(target as HTMLElement, { scaleX: [0, 1], opacity: [0, 1] }, { duration: 0.8, easing: EASE_OUT })
-    return () => {}
   }, { margin: '-40px' })
 }
 
