@@ -43,15 +43,12 @@ import '../styles/animations.css'
   import { initAnimations } from '../scripts/animations'
   import { loadFlags } from '../scripts/flags'
 
-  // Flags: run immediately — no preload dependency
+  // Flags: synchronous, sets background-image immediately
   loadFlags()
 
-  // Animations: run after fonts so layout is stable
-  if (document.fonts?.ready) {
-    document.fonts.ready.then(() => initAnimations())
-  } else {
-    window.addEventListener('load', () => initAnimations())
-  }
+  // Animations: after fonts so layout measurements are stable
+  const ready = document.fonts?.ready ?? Promise.resolve()
+  ready.then(() => initAnimations())
 </script>
 
 <style>

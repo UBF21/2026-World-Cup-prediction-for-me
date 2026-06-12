@@ -45,14 +45,16 @@ function initHeroParallax() {
   const front  = document.querySelector<HTMLElement>('.parallax-front')
   if (!hero || !bg) return
 
-  // Window-level scroll → no target needed, no positioning requirement
-  scroll(({ y }) => {
-    if (!y) return
-    const p = y.progress
+  // Native scroll listener — avoids Motion's container positioning requirement
+  window.addEventListener('scroll', () => {
+    const scrollY    = window.scrollY
+    const heroHeight = hero.offsetHeight
+    if (scrollY > heroHeight) return
+    const p = scrollY / heroHeight
     bg.style.transform = `translateY(${p * PARALLAX_BG}px)`
     if (floats) floats.style.transform = `translateY(${p * PARALLAX_MID}px)`
     if (front)  front.style.transform  = `translateY(${p * PARALLAX_FRONT}px)`
-  }, { target: hero, offset: ['start start', 'end start'] })
+  }, { passive: true })
 }
 
 function initSlideParallax() {
