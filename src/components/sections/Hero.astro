@@ -28,7 +28,7 @@ const fra = getTeam('Francia')!
       <span>Campeón pronosticado · Mundial FIFA 2026</span>
     </div>
 
-    <h1 class="champ-name shimmer-text fade-up">ESPAÑA</h1>
+    <h1 class="champ-name fade-up">ESPAÑA</h1>
 
     <p class="champ-sub fade-up">
       El supercomputador de Opta la hace favorita en el <strong>{champion.probability}%</strong> de 25.000 simulaciones.
@@ -159,7 +159,13 @@ const fra = getTeam('Francia')!
     line-height: 1.1;
     letter-spacing: -.01em;
     overflow: visible;
-    padding-top: 0.15em;
+    padding-top: 0.2em;
+    color: var(--gold);
+    animation: champ-shimmer 3.5s ease-in-out infinite;
+  }
+  @keyframes champ-shimmer {
+    0%, 100% { color: var(--gold); text-shadow: none; }
+    50%       { color: #fff8dc;    text-shadow: 0 0 80px rgba(246,197,68,.35); }
   }
 
   /* Sub text */

@@ -379,29 +379,52 @@ function tieClass(m: BracketMatch, isFinal = false) {
       return { l: r.left - base.left, t: r.top - base.top, w: r.width, h: r.height }
     }
 
+    const mkPath = (d: string, stroke: string, sw: string, glow?: string) => {
+      const p = document.createElementNS(SVGNS, 'path')
+      p.setAttribute('d', d)
+      p.setAttribute('fill', 'none')
+      p.setAttribute('stroke', stroke)
+      p.setAttribute('stroke-width', sw)
+      p.setAttribute('stroke-linejoin', 'round')
+      p.setAttribute('stroke-linecap', 'round')
+      if (glow) p.style.filter = glow
+      svg.appendChild(p)
+    }
+
     for (let r = 0; r < cols.length - 1; r++) {
       const kids = [...cols[r].querySelectorAll<HTMLElement>('.tie')]
       const pars = [...cols[r + 1].querySelectorAll<HTMLElement>('.tie')]
+
       pars.forEach((parent, p) => {
-        const pp = pos(parent)
-        const pLeft = pp.l
-        const pY = pp.t + pp.h / 2
-        ;[kids[2 * p], kids[2 * p + 1]].forEach(child => {
-          if (!child) return
-          const cp = pos(child)
-          const cRight = cp.l + cp.w
-          const cY = cp.t + cp.h / 2
-          const midX = (cRight + pLeft) / 2
-          const hl = child.dataset.winner && child.dataset.winner === parent.dataset.winner
-          const path = document.createElementNS(SVGNS, 'path')
-          path.setAttribute('d', `M ${cRight} ${cY} H ${midX} V ${pY} H ${pLeft}`)
-          path.setAttribute('fill', 'none')
-          path.setAttribute('stroke', hl ? '#1FE08C' : 'rgba(255,255,255,.12)')
-          path.setAttribute('stroke-width', hl ? '2' : '1.4')
-          path.setAttribute('stroke-linejoin', 'round')
-          if (hl) path.style.filter = 'drop-shadow(0 0 5px rgba(31,224,140,.5))'
-          svg.appendChild(path)
-        })
+        const c1 = kids[2 * p]
+        const c2 = kids[2 * p + 1]
+        if (!c1 || !c2) return
+
+        const c1p = pos(c1), c2p = pos(c2), pp = pos(parent)
+        const c1RX = c1p.l + c1p.w
+        const c2RX = c2p.l + c2p.w
+        const c1Y  = c1p.t + c1p.h / 2
+        const c2Y  = c2p.t + c2p.h / 2
+        const pLX  = pp.l
+        const jX   = (Math.max(c1RX, c2RX) + pLX) / 2
+        const jY   = (c1Y + c2Y) / 2
+
+        // Bracket: c1 ──┐ vertical ──┘ c2  (gray background)
+        mkPath(`M ${c1RX} ${c1Y} H ${jX} V ${c2Y} H ${c2RX}`, 'rgba(255,255,255,.15)', '1.4')
+        // Connector: junction midpoint → parent left edge
+        mkPath(`M ${jX} ${jY} H ${pLX}`, 'rgba(255,255,255,.15)', '1.4')
+
+        // Winner path in green, drawn on top
+        const winner = parent.dataset.winner
+        if (winner) {
+          const wc = c1.dataset.winner === winner ? c1 : c2.dataset.winner === winner ? c2 : null
+          if (wc) {
+            const wp = pos(wc)
+            const wY  = wp.t + wp.h / 2
+            const wRX = wp.l + wp.w
+            mkPath(`M ${wRX} ${wY} H ${jX} V ${jY} H ${pLX}`, '#1FE08C', '2', 'drop-shadow(0 0 5px rgba(31,224,140,.5))')
+          }
+        }
       })
     }
   }
