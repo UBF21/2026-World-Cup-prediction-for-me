@@ -10,6 +10,8 @@ export function loadFlags(): void {
     const iso = el.dataset.iso
     if (!iso) return
     el.style.backgroundImage = `url("${FLAGCDN}/${iso.toLowerCase()}.svg")`
+    el.style.backgroundSize = 'cover'
+    el.style.backgroundPosition = 'center'
     el.classList.add('hasflag')
   })
 
