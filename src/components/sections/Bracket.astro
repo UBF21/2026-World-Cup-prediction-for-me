@@ -463,7 +463,22 @@ function tieClass(m: BracketMatch, isFinal = false) {
   }
 
   function init() {
-    requestAnimationFrame(() => { redrawVisible(); hintCheck() })
+    // Double rAF: asegura que el layout esté estabilizado después del paint actual
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      redrawVisible()
+      hintCheck()
+    }))
+    // Fallback para fuentes lentas (Anton/Manrope pueden tardar en asentar el layout)
+    setTimeout(() => { redrawVisible(); hintCheck() }, 500)
+  }
+
+  // ResizeObserver: re-dibuja cuando el contenedor cambia de tamaño (fuentes, imágenes, etc.)
+  if (typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => redraw())
+    const topEl = document.getElementById('bracketTop')
+    const botEl = document.getElementById('bracketBottom')
+    if (topEl) ro.observe(topEl)
+    if (botEl) ro.observe(botEl)
   }
 
   if (document.fonts?.ready) {
@@ -471,6 +486,8 @@ function tieClass(m: BracketMatch, isFinal = false) {
   } else {
     window.addEventListener('load', init)
   }
-  window.addEventListener('load', () => requestAnimationFrame(() => { redrawVisible(); hintCheck() }))
+  window.addEventListener('load', () => requestAnimationFrame(() => requestAnimationFrame(() => {
+    redrawVisible(); hintCheck()
+  })))
   window.addEventListener('resize', () => { redraw(); hintCheck() }, { passive: true })
 </script>
