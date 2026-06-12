@@ -1,0 +1,283 @@
+---
+import FlagImg from '../ui/FlagImg.astro'
+import { computeTrackerStats, espanaPath } from '../../data/bracket'
+import { getTeam } from '../../data/teams'
+
+const stats = computeTrackerStats()
+---
+
+<section id="tracker">
+  <div class="wrap">
+    <div class="sec-head fade-up">
+      <div class="eyebrow">En tiempo real · Fase eliminatoria</div>
+      <h2>¿Cómo va la predicción?</h2>
+      <p>El torneo arrancó el 11 jun. Actualizo el marcador tras cada jornada eliminatoria.</p>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="tracker-cards fade-up">
+      <div class="tcard tcard--correct">
+        <div class="tcard-num">{stats.correct}</div>
+        <div class="tcard-label">Aciertos</div>
+        <div class="tcard-icon">✓</div>
+      </div>
+      <div class="tcard tcard--wrong">
+        <div class="tcard-num">{stats.wrong}</div>
+        <div class="tcard-label">Fallados</div>
+        <div class="tcard-icon">✗</div>
+      </div>
+      <div class="tcard tcard--pending">
+        <div class="tcard-num">{stats.pending}</div>
+        <div class="tcard-label">Pendientes</div>
+        <div class="tcard-icon">◷</div>
+      </div>
+      <div class="tcard tcard--accuracy">
+        <div class="tcard-num">{stats.accuracy > 0 ? `${stats.accuracy}%` : '—'}</div>
+        <div class="tcard-label">Efectividad</div>
+        <div class="tcard-icon">★</div>
+      </div>
+    </div>
+
+    <!-- Overall progress bar -->
+    <div class="tracker-progress fade-up">
+      <div class="tp-bar">
+        <div class="tp-fill tp-fill--correct" style={`width:${(stats.correct/stats.total*100).toFixed(1)}%`}></div>
+        <div class="tp-fill tp-fill--wrong"   style={`width:${(stats.wrong/stats.total*100).toFixed(1)}%`}></div>
+      </div>
+      <span class="tp-label">{stats.correct + stats.wrong}/{stats.total} partidos eliminatorios completados</span>
+    </div>
+
+    <!-- Rounds breakdown -->
+    <div class="rounds-table fade-up">
+      {stats.rounds.map(r => {
+        const cpct = r.total > 0 ? (r.correct / r.total * 100).toFixed(0) : '0'
+        const wpct = r.total > 0 ? (r.wrong   / r.total * 100).toFixed(0) : '0'
+        return (
+          <div class="round-row">
+            <span class="round-label">{r.label}</span>
+            <div class="round-bar">
+              <div class="round-fill round-fill--correct" style={`width:${cpct}%`}></div>
+              <div class="round-fill round-fill--wrong"   style={`width:${wpct}%`}></div>
+            </div>
+            <span class="round-score">
+              <span class="round-c">{r.correct}</span>
+              <span class="round-sep">/</span>
+              <span class="round-t">{r.total}</span>
+            </span>
+          </div>
+        )
+      })}
+    </div>
+
+    <!-- España's predicted path -->
+    <div class="esp-path fade-up">
+      <div class="esp-path-head">
+        <span class="eyebrow-sm">El camino de España</span>
+      </div>
+      <div class="esp-path-chain">
+        {espanaPath.map((step, i) => {
+          const opp = step.match.away === 'España' ? step.match.home : step.match.away
+          const oppTeam = getTeam(opp)
+          const st = step.match.status ?? 'pending'
+          return (
+            <>
+              <div class={`path-node path-node--${st}`}>
+                <div class="path-round">{step.round}</div>
+                <div class="path-vs">
+                  {oppTeam && <FlagImg isoCode={oppTeam.isoCode} name={oppTeam.name} code={oppTeam.code} color={oppTeam.color} size="sm" />}
+                  <span class="path-opp">{opp}</span>
+                </div>
+                <div class="path-status">
+                  {st === 'correct' && <span class="status-ok">✓ Acertado</span>}
+                  {st === 'wrong'   && <span class="status-fail">✗ Fallado</span>}
+                  {st === 'pending' && <span class="status-wait">Pendiente</span>}
+                </div>
+              </div>
+              {i < espanaPath.length - 1 && <div class="path-arrow">→</div>}
+            </>
+          )
+        })}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  #tracker { padding: clamp(48px,7vw,80px) 0; }
+
+  /* Stat cards */
+  .tracker-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 640px) {
+    .tracker-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .tcard {
+    background: linear-gradient(160deg, var(--surface), var(--night));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .18s, box-shadow .18s;
+  }
+  .tcard:hover { transform: translateY(-3px); }
+  .tcard-num {
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 700;
+    font-size: clamp(32px, 5vw, 44px);
+    line-height: 1;
+  }
+  .tcard-label {
+    font: 600 12px/1.4 'Manrope';
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .tcard-icon {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-size: 22px;
+    opacity: .15;
+  }
+  .tcard--correct { border-color: rgba(31,224,140,.25); }
+  .tcard--correct .tcard-num { color: var(--pitch); }
+  .tcard--wrong   { border-color: rgba(255,84,112,.25); }
+  .tcard--wrong   .tcard-num { color: var(--coral); }
+  .tcard--pending .tcard-num { color: var(--muted); }
+  .tcard--accuracy { border-color: rgba(246,197,68,.25); }
+  .tcard--accuracy .tcard-num { color: var(--gold); }
+
+  /* Overall progress */
+  .tracker-progress {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .tp-bar {
+    flex: 1;
+    height: 10px;
+    background: var(--line2);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+  }
+  .tp-fill { height: 100%; transition: width .8s ease; }
+  .tp-fill--correct { background: var(--pitch); }
+  .tp-fill--wrong   { background: var(--coral); }
+  .tp-label {
+    font: 600 13px/1 'Spline Sans Mono', monospace;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* Rounds table */
+  .rounds-table {
+    background: linear-gradient(160deg, var(--surface), var(--night));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .round-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 64px;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line2);
+    transition: background .15s;
+  }
+  .round-row:last-child { border-bottom: none; }
+  .round-row:hover { background: rgba(31,224,140,.03); }
+  .round-label {
+    font: 700 13px/1 'Manrope';
+    color: var(--ink);
+  }
+  .round-bar {
+    height: 8px;
+    background: rgba(255,255,255,.07);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+  }
+  .round-fill { height: 100%; transition: width .8s ease; }
+  .round-fill--correct { background: var(--pitch); }
+  .round-fill--wrong   { background: var(--coral); }
+  .round-score {
+    font: 700 13px/1 'Spline Sans Mono', monospace;
+    text-align: right;
+  }
+  .round-c   { color: var(--pitch); }
+  .round-sep { color: var(--muted); }
+  .round-t   { color: var(--muted); }
+
+  /* España path */
+  .esp-path {
+    background: linear-gradient(160deg, var(--surface), var(--night));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .esp-path-head { margin-bottom: 20px; }
+  .eyebrow-sm {
+    font: 700 11px/1 'Manrope';
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .esp-path-chain {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .path-node {
+    min-width: 120px;
+    background: var(--night);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    transition: border-color .18s;
+    flex-shrink: 0;
+  }
+  .path-node--correct { border-color: rgba(31,224,140,.5); }
+  .path-node--wrong   { border-color: rgba(255,84,112,.5); }
+  .path-round {
+    font: 700 9px/1 'Manrope';
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+  .path-vs {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font: 700 12px/1.2 'Manrope';
+    margin-bottom: 7px;
+  }
+  .path-opp { color: var(--ink); }
+  .path-status { font: 600 10px/1 'Manrope'; }
+  .status-ok   { color: var(--pitch); }
+  .status-fail { color: var(--coral); }
+  .status-wait { color: var(--muted); opacity: .6; }
+
+  .path-arrow {
+    font-size: 18px;
+    color: var(--muted);
+    opacity: .4;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+  @media (max-width: 760px) {
+    .round-row { grid-template-columns: 120px 1fr 48px; gap: 10px; }
+  }
+</style>

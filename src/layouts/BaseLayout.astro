@@ -5,8 +5,11 @@ interface Props {
 }
 const {
   title = 'Mundial 2026 · Predicción de los 104 partidos',
-  description = 'Predicción completa del Mundial FIFA 2026: grupos, bracket, favoritos y metodología. España campeona según Opta. By FRMM.',
+  description = 'Predicción completa del Mundial FIFA 2026: grupos, bracket, favoritos y metodología. España campeona según Opta. By Felipe Rafael Montenegro.',
 } = Astro.props
+
+const siteUrl = 'https://2026-world-cup-prediction-for-me.netlify.app'
+const ogImage = `${siteUrl}/og.svg`
 ---
 <!DOCTYPE html>
 <html lang="es">
@@ -14,8 +17,24 @@ const {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content={description} />
-  <meta property="og:title" content={title} />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content={siteUrl} />
+  <meta property="og:title"       content={title} />
   <meta property="og:description" content={description} />
+  <meta property="og:image"       content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale"      content="es_ES" />
+  <meta property="og:site_name"   content="Mundial 2026 · Predicción" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image"       content={ogImage} />
+
   <meta name="theme-color" content="#07111C" />
   <title>{title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />

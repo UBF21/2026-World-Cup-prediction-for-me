@@ -1,3 +1,5 @@
+export type MatchStatus = 'pending' | 'correct' | 'wrong'
+
 export interface BracketMatch {
   home: string
   away: string
@@ -5,6 +7,7 @@ export interface BracketMatch {
   awayScore: number
   winnerIdx: 0 | 1
   note?: string
+  status?: MatchStatus
 }
 
 export interface BracketHalf {
@@ -72,3 +75,39 @@ export const BOT: BracketHalf = {
 
 export const finalMatch: BracketMatch = m('España', 'Francia', 2, 1, 0)
 export const thirdMatch: BracketMatch = m('Argentina', 'Inglaterra', 2, 1, 0)
+
+export interface RoundStat { label: string; total: number; correct: number; wrong: number }
+export interface TrackerStats {
+  total: number; correct: number; wrong: number; pending: number; accuracy: number
+  rounds: RoundStat[]
+}
+
+// Camino de España en el bracket
+export const espanaPath = [
+  { round: 'Dieciseisavos', match: TOP.r32[0] },
+  { round: 'Octavos',       match: TOP.r16[0] },
+  { round: 'Cuartos',       match: TOP.qf[0]  },
+  { round: 'Semifinal',     match: TOP.sf[0]  },
+  { round: 'Final',         match: finalMatch  },
+]
+
+export function computeTrackerStats(): TrackerStats {
+  const defs = [
+    { label: 'Dieciseisavos', matches: [...TOP.r32, ...BOT.r32] },
+    { label: 'Octavos',       matches: [...TOP.r16, ...BOT.r16] },
+    { label: 'Cuartos',       matches: [...TOP.qf,  ...BOT.qf]  },
+    { label: 'Semifinal',     matches: [...TOP.sf,  ...BOT.sf]  },
+    { label: 'Final + 3º',    matches: [finalMatch, thirdMatch]  },
+  ]
+  const rounds: RoundStat[] = defs.map(d => ({
+    label:   d.label,
+    total:   d.matches.length,
+    correct: d.matches.filter(m => m.status === 'correct').length,
+    wrong:   d.matches.filter(m => m.status === 'wrong').length,
+  }))
+  const total   = rounds.reduce((s, r) => s + r.total, 0)
+  const correct = rounds.reduce((s, r) => s + r.correct, 0)
+  const wrong   = rounds.reduce((s, r) => s + r.wrong, 0)
+  const played  = correct + wrong
+  return { total, correct, wrong, pending: total - played, accuracy: played ? Math.round(correct / played * 100) : 0, rounds }
+}

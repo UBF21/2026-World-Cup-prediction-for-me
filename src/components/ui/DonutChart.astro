@@ -1,0 +1,80 @@
+---
+interface Props {
+  value: number
+  name: string
+  size?: 'lg' | 'sm'
+  accent?: 'gold' | 'pitch'
+  delay?: number
+}
+const { value, name, size = 'sm', accent = 'pitch', delay = 0 } = Astro.props
+
+const r    = size === 'lg' ? 50 : 28
+const sw   = size === 'lg' ? 10 : 7
+const circ = parseFloat((2 * Math.PI * r).toFixed(3))
+const off  = parseFloat((circ * (1 - value / 100)).toFixed(3))
+const dim  = (r + sw / 2 + 4) * 2
+const c    = dim / 2
+const col  = accent === 'gold' ? 'var(--gold)' : 'var(--pitch)'
+const displayVal = value >= 10 ? Math.round(value) + '%' : value.toFixed(1) + '%'
+---
+
+<div class={`donut donut--${size}`}>
+  <div class="donut-ring">
+    <svg width={dim} height={dim} viewBox={`0 0 ${dim} ${dim}`}>
+      <!-- Background track -->
+      <circle cx={c} cy={c} r={r} fill="none" stroke="rgba(255,255,255,.07)" stroke-width={sw}/>
+      <!-- Animated arc -->
+      <circle
+        cx={c} cy={c} r={r}
+        fill="none"
+        stroke={col}
+        stroke-width={sw}
+        stroke-linecap="round"
+        class="donut-arc"
+        data-offset={off}
+        style={`stroke-dasharray:${circ};stroke-dashoffset:${circ};transform:rotate(-90deg);transform-origin:${c}px ${c}px;transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1) ${delay}s`}
+      />
+    </svg>
+    <div class="donut-center">
+      <span class={`donut-val donut-val--${accent}`}>{displayVal}</span>
+    </div>
+  </div>
+  <span class="donut-name">{name}</span>
+</div>
+
+<style>
+  .donut { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+  .donut-ring {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .donut-ring svg { display: block; }
+
+  .donut-center {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .donut-val {
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .donut-val--gold  { color: var(--gold); }
+  .donut-val--pitch { color: var(--pitch); }
+  .donut--lg .donut-val { font-size: 18px; }
+  .donut--sm .donut-val { font-size: 11px; }
+
+  .donut-name {
+    font: 700 11px/1.2 'Manrope';
+    text-align: center;
+    color: var(--ink);
+    max-width: 80px;
+  }
+  .donut--lg .donut-name { font-size: 13px; max-width: 120px; }
+</style>
